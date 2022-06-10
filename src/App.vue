@@ -1,37 +1,30 @@
 <template>
   <v-app>
+      <!-- If a navigation drawer will be needed comment this in
     <v-navigation-drawer app>
-      <!-- -->
     </v-navigation-drawer>
-
-    <v-app-bar app>
-      <!-- -->
-    </v-app-bar>
+    -->
+    <Header />
 
     <!-- Sizes your content based upon application components -->
     <v-main>
-
       <!-- Provides the application the proper gutter -->
-      <v-container fluid>
 
         <!-- If using vue-router -->
-        <router-view></router-view>
-      </v-container>
+        <Queue />
     </v-main>
-
-    <v-footer app>
-      <!-- -->
-    </v-footer>
   </v-app>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
+import Header from "@/components/Header";
+import Queue from "@/components/Queue";
 
 export default {
   name: 'App',
-
-  data: () => ({
+    components: {Queue, Header},
+    data: () => ({
     //
   }),
   methods: {
@@ -47,3 +40,9 @@ export default {
   },
 };
 </script>
+
+<style>
+body, html {
+    overflow: hidden
+}
+</style>

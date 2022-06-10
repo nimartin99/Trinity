@@ -1,20 +1,11 @@
 <template>
     <v-container fluid>
-        <v-row>
-            <v-col>
-                Hello world!
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <HelloWorld />
-            </v-col>
-        </v-row>
+        <HelloWorld />
     </v-container>
 </template>
 
 <script>
-import HelloWorld from "../components/HelloWorld";
+import HelloWorld from "../components/Queue";
 
 export default {
     name: "Home",
