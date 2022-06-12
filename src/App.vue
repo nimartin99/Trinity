@@ -19,7 +19,7 @@
 <script>
 import { mapActions } from 'vuex';
 import Header from "@/components/Header";
-import Queue from "@/components/Queue";
+import Queue from "@/components/Overview";
 
 export default {
   name: 'App',

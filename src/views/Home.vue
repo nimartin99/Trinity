@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import HelloWorld from "../components/Queue";
+import HelloWorld from "../components/Overview";
 
 export default {
     name: "Home",
