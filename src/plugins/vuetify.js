@@ -20,6 +20,10 @@ export default new Vuetify({
                 darkGreen: '#003B00',
                 green: '#008F11',
                 lightGreen: '#00FF41',
+
+                // Widget Color
+                header1: '#ff6a00',
+                header2: '#008F11',
             },
         },
     },
