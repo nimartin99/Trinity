@@ -52,6 +52,32 @@
                             <v-btn
                                 v-on="on"
                                 v-bind="attrs"
+                                style="width: 36px; min-width: 36px; margin-right: 8px"
+                                @click="changeLoopMode"
+                            >
+                                <v-icon>mdi-reload</v-icon>
+                                <v-icon
+                                    v-if="loopMode === 'noLoop'"
+                                    style="position: absolute"
+                                    x-large
+                                >
+                                    mdi-close
+                                </v-icon>
+                                <span
+                                    v-if="loopMode === 'loopOne'"
+                                    style="position: absolute; top: 4px; left: 6px; font-weight: bold"
+                                >
+                                    1
+                                </span>
+                            </v-btn>
+                        </template>
+                        <span>{{ loopMode === 'loopWhole' ? 'Alles wiederholen' : loopMode === 'loopOne' ? 'Oberstes wiederholen' : 'Nichts wiederholen' }}</span>
+                    </v-tooltip>
+                    <v-tooltip top>
+                        <template v-slot:activator="{on, attrs}">
+                            <v-btn
+                                v-on="on"
+                                v-bind="attrs"
                                 style="width: 36px; min-width: 36px"
                                 @click="shuffleQueue"
                             >
@@ -86,7 +112,6 @@
 import * as backend from "@/api/backend";
 import Queue from "@/components/Queue";
 import Selection from "@/components/Selection";
-import matrixBackground from "../assets/matrix.gif";
 
 export default {
     name: 'Overview',
@@ -96,6 +121,7 @@ export default {
         catFact: '',
         queue: [],
         queuePlaying: false,
+        loopMode: 'noLoop',
 
         snackbar: false,
         snackbarText: '',
@@ -148,6 +174,19 @@ export default {
             this.snackbarText = text;
             this.snackbarColor = color;
             this.snackbar = true;
+        },
+        changeLoopMode() {
+            switch (this.loopMode) {
+                case "noLoop":
+                    this.loopMode = "loopWhole";
+                    break;
+                case "loopWhole":
+                    this.loopMode = "loopOne";
+                    break;
+                case "loopOne":
+                    this.loopMode = "noLoop";
+                    break;
+            }
         }
     }
 }
