@@ -17,7 +17,8 @@
             </div>
             <Selection
                 @addSingleColor="(color, duration) => { addElementToQueue( {type: 'singleColor', color, duration}) }"
-                @addText="(text, color, duration) => { addElementToQueue({type: 'text', text, color, duration}) }"
+                @addWeather="(color, duration) => { addElementToQueue( {type: 'weather', color, duration}) }"
+                @addText="(text, color, bgColor, duration) => { addElementToQueue({type: 'text', text, color, bgColor, duration}) }"
             />
         </div>
         <div class="widget">
@@ -121,7 +122,7 @@ export default {
         catFact: '',
         queue: [],
         queuePlaying: false,
-        loopMode: 'noLoop',
+        loopMode: 'loopWhole',
 
         snackbar: false,
         snackbarText: '',
@@ -179,12 +180,15 @@ export default {
             switch (this.loopMode) {
                 case "noLoop":
                     this.loopMode = "loopWhole";
+                    Queue.changeLoopMode();
                     break;
                 case "loopWhole":
                     this.loopMode = "loopOne";
+                    Queue.changeLoopMode();
                     break;
                 case "loopOne":
                     this.loopMode = "noLoop";
+                    Queue.changeLoopMode();
                     break;
             }
         }

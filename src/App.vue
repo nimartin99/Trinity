@@ -21,6 +21,7 @@ import { mapActions } from 'vuex';
 import Header from "@/components/Header";
 import Queue from "@/components/Overview";
 
+
 export default {
   name: 'App',
     components: {Queue, Header},

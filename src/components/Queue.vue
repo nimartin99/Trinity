@@ -1,68 +1,50 @@
 <template>
     <div class="queueContainer">
-        <div
-            v-for="(element, index) in queue"
-            :key="index"
-            class="elementQueue"
-        >
+        <div v-for="(element, index) in queue" :key="index" class="elementQueue">
             <!-- Single color -->
-            <div
-                v-if="element && element.type === 'singleColor'"
-                class="singleColorContainer"
-                :style="'background-color: ' + element.color"
-            >
+            <div v-if="element && element.type === 'singleColor'" class="singleColorContainer"
+                :style="'background-color: ' + element.color">
                 <div class="elementInfo">
-                    <span
-                        style="font-size: x-large"
-                        :style="isColorTooBrightForWhite(element.color) ? 'color: black' : 'color: white'"
-                    >
+                    <span style="font-size: x-large"
+                        :style="isColorTooBrightForWhite(element.color) ? 'color: black' : 'color: white'">
                         Farbe
                     </span>
-                    <DurationBar
-                        v-if="index === 0"
-                        :duration="element.duration"
-                        :progress="currentElementProgress"
-                        :progress-text-color="isColorTooBrightForWhite(element.color) ? 'black' : 'white'"
-                    />
+                    <DurationBar v-if="index === 0" :duration="element.duration" :progress="currentElementProgress"
+                        :progress-text-color="isColorTooBrightForWhite(element.color) ? 'black' : 'white'" />
                 </div>
-                <ElementQueueButtons
-                    :disable-move-up="index === 0"
-                    :disable-move-down="index === queue.length - 1"
-                    style="position: absolute; right: 32px;"
-                    @moveDown="moveElementDown(index)"
-                    @moveUp="moveElementUp(index)"
-                    @delete="deleteElement(index)"
-                />
+                <ElementQueueButtons :disable-move-up="index === 0" :disable-move-down="index === queue.length - 1"
+                    style="position: absolute; right: 32px;" @moveDown="moveElementDown(index)"
+                    @moveUp="moveElementUp(index)" @delete="deleteElement(index)" />
+            </div>
+
+            <div v-if="element && element.type === 'weather'" class="weatherContainer"
+                :style="'background-color: ' + element.color">
+                <div class="elementInfo">
+                    <span style="font-size: x-large"
+                        :style="isColorTooBrightForWhite(element.color) ? 'color: black' : 'color: white'">
+                        Wetter
+                    </span>
+                    <DurationBar v-if="index === 0" :duration="element.duration" :progress="currentElementProgress"
+                        :progress-text-color="isColorTooBrightForWhite(element.color) ? 'black' : 'white'" />
+                </div>
+                <ElementQueueButtons :disable-move-up="index === 0" :disable-move-down="index === queue.length - 1"
+                    style="position: absolute; right: 32px;" @moveDown="moveElementDown(index)"
+                    @moveUp="moveElementUp(index)" @delete="deleteElement(index)" />
             </div>
 
             <!-- Text -->
-            <div
-                v-if="element && element.type === 'text'"
-                class="textContainer"
-                style="background-color: #FFFFFF"
-            >
+            <div v-if="element && element.type === 'text'" class="textContainer"
+                :style="'background-color: ' + element.bgColor">
                 <div class="elementInfo">
-                    <span
-                        style="margin: auto; font-size: xxx-large"
-                        :style="'color: ' + element.color"
-                    >
+                    <span style="margin: auto; font-size: xxx-large" :style="'color: ' + element.color">
                         {{ element.text }}
                     </span>
-                    <DurationBar
-                        v-if="index === 0"
-                        :duration="element.duration"
-                        :progress="currentElementProgress"
-                        :progress-text-color="'black'"
-                    />
+                    <DurationBar v-if="index === 0" :duration="element.duration" :progress="currentElementProgress"
+                        :progress-text-color="isColorTooBrightForWhite(element.bgColor) ? 'black' : 'white'" />
                 </div>
-                <ElementQueueButtons
-                    :disable-move-up="index === 0"
-                    :disable-move-down="index === queue.length - 1"
-                    style="position: absolute; right: 32px;"
-                    @moveDown="moveElementDown(index)"
-                    @moveUp="moveElementUp(index)"
-                    @delete="deleteElement(index)"
-                />
+                <ElementQueueButtons :disable-move-up="index === 0" :disable-move-down="index === queue.length - 1"
+                    style="position: absolute; right: 32px;" @moveDown="moveElementDown(index)"
+                    @moveUp="moveElementUp(index)" @delete="deleteElement(index)" />
             </div>
         </div>
     </div>
@@ -72,6 +54,7 @@
 
 import ElementQueueButtons from "@/components/QueueComponents/ElementQueueButtons";
 import DurationBar from "@/components/QueueComponents/DurationBar";
+import { stringify } from "querystring";
 export default {
     name: "Queue",
     components: {DurationBar, ElementQueueButtons},
@@ -80,8 +63,14 @@ export default {
         queuePlaying: {type: Boolean, required: true},
     },
     data: () => ({
+        api_key: '22b001ab26511ebd68eb57328e0a4a2b',
+        url_base: 'https://api.openweathermap.org/data/2.5',
+        weather: {},
+        location: 'Heilbronn',
+
         currentElementProgress: 0,
         clock: null,
+        loopMode: 'loopWhole'
     }),
     watch: {
         queuePlaying() {
@@ -100,8 +89,13 @@ export default {
                     clearInterval(this.clock);
                     return;
                 }
-                if(this.currentElementProgress >= this.queue[0].duration) {
-                    this.$emit('delete', 0);
+                if (this.currentElementProgress >= this.queue[0].duration) {
+                    if (this.loopMode == 'noLoop') {
+                        this.$emit('delete', 0);
+                    }
+                    if (this.loopMode == 'loopWhole') {
+                        this.moveElementBottom(0);
+                    }
                     clearInterval(this.clock);
                     this.currentElementProgress = 0;
                     if(this.queue.length > 0) {
@@ -150,9 +144,29 @@ export default {
                 this.$emit('moveDown', index);
             }
         },
+        moveElementBottom(index) {
+            if (index === 0) {
+                this.currentElementProgress = 0;
+                clearInterval(this.clock);
+                for (let i = index; i < this.queue.length; i++){
+                    this.$emit('moveDown', i);
+                }
+                
+                if (this.queue.length > 0 && this.queuePlaying) {
+                    this.startClock();
+                }
+            } else {
+                for (let i = index; i < this.queue.length; i++){
+                    this.$emit('moveDown', i);
+                }
+            }
+        },
 
         moveElementUp(index) {
-            if(index === 1) {
+            if (index === 1) {
+                //if (String(queue[1].type).valueOf == 'weather'.valueOf) {
+                //    this.fetchWeather();
+                //}
                 this.currentElementProgress = 0;
                 clearInterval(this.clock);
                 this.$emit('moveUp', index);
@@ -163,11 +177,38 @@ export default {
                 this.$emit('moveUp', index);
             }
         },
+        changeLoopMode() {
+            switch (this.loopMode) {
+                case "noLoop":
+                    this.loopMode = "loopWhole";
+                    break;
+                case "loopWhole":
+                    this.loopMode = "loopOne";
+                    break;
+                case "loopOne":
+                    this.loopMode = "noLoop";
+                    break;
+            }
+        },
+
+                fetchWeather() {
+            fetch(`${this.url_base}weather?q=${this.location}&units=metric&APPID=${this.api_key}`)
+                .then(res => {
+                    return res.json();
+                }).then(this.setResults);
+        },
+
+        setResults(results) {
+            this.weather = results;
+        }
     }
 }
+
+
 </script>
 
 <style scoped>
+
 .elementQueue {
     width: 100%;
     height: 100px;
@@ -187,6 +228,13 @@ export default {
 }
 
 .singleColorContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.weatherContainer {
     width: 100%;
     height: 100%;
     display: flex;
