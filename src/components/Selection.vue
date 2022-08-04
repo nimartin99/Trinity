@@ -32,6 +32,14 @@
                     </template>
                     <v-color-picker v-model="colorWeather" class="option" />
                 </v-menu>
+                <v-menu v-model="WeatherBGColorPickerMenu" offset-y :close-on-content-click="false">
+                    <template v-slot:activator="{ on, attrs }">
+                        <div style="width: 32px; height: 32px; border: 2px solid rgba(231, 231, 231, 1)"
+                            :style="'background-color: ' + weatherColorBackground" v-on="on" v-bind="attrs"
+                            class="option" />
+                    </template>
+                    <v-color-picker v-model="weatherColorBackground" />
+                </v-menu>
                 <DurationSelector :default-duration="weatherDuration" class="option"
                     @durationChange="(duration) => { weatherDuration = duration }" />
             </div>
@@ -87,7 +95,8 @@ name: "Selection",
 
         // Wetter
         weatherColorPickerMenu: false,
-        colorWeather: '#8a198a',
+        colorWeather: '#ffffff',
+        weatherColorBackground: '#0550a7',
         weatherDuration: '00:00:05',
 
         // Text
@@ -104,7 +113,7 @@ name: "Selection",
             return date.getTime() / 1000;
         },
         addWeather() {
-            this.$emit("addWeather", this.colorWeather, this.convertTimeStringToSeconds(this.weatherDuration));
+            this.$emit("addWeather", this.colorWeather, this.weatherColorBackground, this.convertTimeStringToSeconds(this.weatherDuration));
         },
         addSingleColor() {
             this.$emit("addSingleColor", this.colorSingleColor, this.convertTimeStringToSeconds(this.singleColorDuration));
@@ -113,16 +122,16 @@ name: "Selection",
         addText() {
             this.$emit("addText", this.text, this.colorText, this.textColorBackground, this.convertTimeStringToSeconds(this.textDuration));
         },
-        fetchWeather() {
-            fetch(`${this.api_base}weather?q=Heilbronn_Sontheim&units=metric&APPID=${this.api_key}`)
-                .then(res => {
-                    return res.json();
-                }).then(this.setResults);
-        },
+        //fetchWeather() {
+        //    fetch(`${this.api_base}weather?q=Heilbronn_Sontheim&units=metric&APPID=${this.api_key}`)
+        //        .then(res => {
+        //            return res.json();
+        //        }).then(this.setResults);
+        //},
 
-        setResults(results) {
-            this.weather = results;
-        }
+        //setResults(results) {
+        //    this.weather = results;
+        //}
     }
 }
 </script>

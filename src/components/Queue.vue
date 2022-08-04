@@ -17,12 +17,12 @@
                     @moveUp="moveElementUp(index)" @delete="deleteElement(index)" />
             </div>
 
+            <!-- Weather -->
             <div v-if="element && element.type === 'weather'" class="weatherContainer"
-                :style="'background-color: ' + element.color">
+                :style="'background-color: ' + element.bgColor">
                 <div class="elementInfo">
-                    <span style="font-size: x-large"
-                        :style="isColorTooBrightForWhite(element.color) ? 'color: black' : 'color: white'">
-                        Wetter
+                    <span style="font-size: x-large" :style="'color: ' + element.color">
+                        Regen 27°C
                     </span>
                     <DurationBar v-if="index === 0" :duration="element.duration" :progress="currentElementProgress"
                         :progress-text-color="isColorTooBrightForWhite(element.color) ? 'black' : 'white'" />
@@ -100,6 +100,10 @@ export default {
                     this.currentElementProgress = 0;
                     if(this.queue.length > 0) {
                         this.startClock();
+                        if (String(queue[1].type).valueOf == 'weather'.valueOf) {
+                            this.fetchWeather();
+                            console.log('hi')
+                        }
                     } else {
                         this.$emit("stopQueue");
                     }
@@ -131,7 +135,7 @@ export default {
                 this.$emit('delete', index);
             }
         },
-
+        
         moveElementDown(index) {
             if(index === 0) {
                 this.currentElementProgress = 0;
@@ -164,9 +168,6 @@ export default {
 
         moveElementUp(index) {
             if (index === 1) {
-                //if (String(queue[1].type).valueOf == 'weather'.valueOf) {
-                //    this.fetchWeather();
-                //}
                 this.currentElementProgress = 0;
                 clearInterval(this.clock);
                 this.$emit('moveUp', index);

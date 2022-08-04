@@ -17,7 +17,7 @@
             </div>
             <Selection
                 @addSingleColor="(color, duration) => { addElementToQueue( {type: 'singleColor', color, duration}) }"
-                @addWeather="(color, duration) => { addElementToQueue( {type: 'weather', color, duration}) }"
+                @addWeather="(color, bgColor, duration) => { addElementToQueue( {type: 'weather', color, bgColor, duration}) }"
                 @addText="(text, color, bgColor, duration) => { addElementToQueue({type: 'text', text, color, bgColor, duration}) }"
             />
         </div>
@@ -47,7 +47,7 @@
                         {{ queuePlaying ? 'mdi-pause' : 'mdi-play' }}
                     </v-icon>
                 </v-btn>
-                <div style="display: flex; justify-content: flex-end; width: 30%">
+                <!--div-- style="display: flex; justify-content: flex-end; width: 30%">
                     <v-tooltip top>
                         <template v-slot:activator="{on, attrs}">
                             <v-btn
@@ -87,7 +87,7 @@
                         </template>
                         <span>Warteschlange mischen</span>
                     </v-tooltip>
-                </div>
+                </!--div-->
             </div>
             <Queue
                 :queue="queue"
